@@ -123,6 +123,7 @@ http://localhost:35000
 ```
 
 🎥 Video Demostrativo
-Mira el sistema en funcionamiento:
+Sistema en funcionamiento:
 
-🔗 Ver video en YouTube <!-- Reemplaza con tu enlace real -->
+https://github.com/user-attachments/assets/15c45829-27bb-4695-8808-1b457dbf47c2
+
