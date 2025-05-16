@@ -34,19 +34,27 @@ Los modelos entrenados con IA analizan esta información para predecir con un **
 - **OpenCV** (procesamiento de imágenes satelitales)
 - **Flask / FastAPI** (API backend)
 - **React / HTML-CSS** (Interfaz de usuario)
-- **MongoDB / PostgreSQL** (almacenamiento de datos)
-- **Docker** (despliegue)
 - **CI/CD con GitHub Actions**
 
 ---
 
 ## 📁 Estructura del proyecto
 
-```bash
+```
 /
-├── frontend/           # Interfaz de usuario (React o HTML/CSS/JS)
+├── frontend/           # Interfaz de usuario (HTML/CSS/JS)
 ├── backend/            # Lógica de negocio y servicios API
 ├── models/             # Modelos entrenados de predicción climática
 ├── data/               # Datos históricos y en tiempo real
 ├── docs/               # Documentación técnica
 └── README.md
+
+```
+
+## ⚙️ Instalación del proyecto
+
+```
+git clone https://github.com/tu_usuario/prediccion-meteorologica-inteligente.git
+cd prediccion-meteorologica-inteligente
+
+```
