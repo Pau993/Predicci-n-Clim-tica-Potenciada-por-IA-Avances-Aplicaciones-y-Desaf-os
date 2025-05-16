@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" href="weather-icon.png">
+    <title>Red de Sensores - Predicción Meteorológica</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f4f8;
+            color: #333;
+        }
+
+        header {
+            background-color: #1e3a8a;
+            color: #fff;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            padding: 0.5rem 0;
+        }
+
+        nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        nav ul li a:hover {
+            text-decoration: underline;
+        }
+
+        main {
+            padding: 2rem;
+            background: #e0f2fe;
+            min-height: 80vh;
+        }
+
+        .sensor-header h3 {
+            color: #1e3a8a;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .sensors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .sensor-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .sensor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e0f2fe;
+        }
+
+        .sensor-status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-inactive {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .sensor-data {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .data-item {
+            text-align: center;
+            padding: 0.75rem;
+            background: #f8fafc;
+            border-radius: 8px;
+            transition: transform 0.2s ease;
+        }
+
+        .data-item:hover {
+            transform: translateY(-2px);
+            background: #f1f5f9;
+        }
+
+        .data-value {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1e3a8a;
+        }
+
+        .data-label {
+            font-size: 0.875rem;
+            color: #64748b;
+            margin-top: 0.25rem;
+        }
+
+        footer {
+            background-color: #1e293b;
+            color: #cbd5e1;
+            text-align: center;
+            padding: 1rem;
+            margin-top: 2rem;
+        }
+
+        .sensor-footer {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e2e8f0;
+            text-align: right;
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+
+        @media (min-width: 768px) {
+            .sensor-data {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>🌤️ Predicción Meteorológica Inteligente</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="satelital.html">Satelital</a></li>
+                <li><a href="sensores.html">Sensores</a></li>
+                <li><a href="historico.html">Histórico</a></li>
+                <li><a href="prediccion.html">Predicciones</a></li>
+                <li><a href="datos.html">Datos</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="sensors-grid">
+            <!-- Bogotá -->
+            <div class="sensor-card">
+                <div class="sensor-header">
+                    <h3>Sensor Bogotá Norte</h3>
+                    <span class="sensor-status status-active">Activo</span>
+                </div>
+                <div class="sensor-data">
+                    <div class="data-item">
+                        <div class="data-value">18°C</div>
+                        <div class="data-label">Temperatura</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-value">68%</div>
+                        <div class="data-label">Humedad</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-value">1015 hPa</div>
+                        <div class="data-label">Presión</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-value">12 km/h</div>
+                        <div class="data-label">Viento</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-value">0.2 mm</div>
+                        <div class="data-label">Precipitación</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-value">82 W/m²</div>
+                        <div class="data-label">Radiación Solar</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-value">NE</div>
+                        <div class="data-label">Dirección Viento</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-value">45 µg/m³</div>
+                        <div class="data-label">PM2.5</div>
+                    </div>
+                </div>
+                <div class="sensor-footer">
+                    <p>Última actualización: 15/05/2025 14:30</p>
+                </div>
+            </div>
+
+            <!-- Medellín (con datos inspirados en SIATA) -->
+            <div class="sensor-card">
+                <div class="sensor-header">
+                    <h3>Sensor Medellín - Estadio</h3>
+                    <span class="sensor-status status-active">Activo</span>
+                </div>
+                <div class="sensor-data">
+                    <div class="data-item">
+                        <div class="data-value">23°C</div>
+                        <div class="data-label">Temperatura</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-value">72%</div>
+                        <div class="data-label">Humedad</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-value">1010 hPa</div>
+                        <div class="data-label">Presión</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-value">8 km/h</div>
+                        <div class="data-label">Viento</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-value">1.5 mm</div>
+                        <div class="data-label">Precipitación</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-value">95 W/m²</div>
+                        <div class="data-label">Radiación Solar</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-value">SW</div>
+                        <div class="data-label">Dirección Viento</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-value">38 µg/m³</div>
+                        <div class="data-label">PM2.5</div>
+                    </div>
+                </div>
+                <div class="sensor-footer">
+                    <p>Última actualización: 15/05/2025 14:30</p>
+                </div>
+            </div>
+        </div>
+        <!-- Cali -->
+        <div class="sensor-card">
+            <div class="sensor-header">
+                <h3>Sensor Cali - Valle del Lili</h3>
+                <span class="sensor-status status-active">Activo</span>
+            </div>
+            <div class="sensor-data">
+                <div class="data-item">
+                    <div class="data-value">26°C</div>
+                    <div class="data-label">Temperatura</div>
+                </div>
+                <div class="data-item">
+                    <div class="data-value">75%</div>
+                    <div class="data-label">Humedad</div>
+                </div>
+                <div class="data-item">
+                    <div class="data-value">1008 hPa</div>
+                    <div class="data-label">Presión</div>
+                </div>
+                <div class="data-item">
+                    <div class="data-value">6 km/h</div>
+                    <div class="data-label">Viento</div>
+                </div>
+                <div class="data-item">
+                    <div class="data-value">0.8 mm</div>
+                    <div class="data-label">Precipitación</div>
+                </div>
+                <div class="data-item">
+                    <div class="data-value">110 W/m²</div>
+                    <div class="data-label">Radiación Solar</div>
+                </div>
+                <div class="data-item">
+                    <div class="data-value">SE</div>
+                    <div class="data-label">Dirección Viento</div>
+                </div>
+                <div class="data-item">
+                    <div class="data-value">42 µg/m³</div>
+                    <div class="data-label">PM2.5</div>
+                </div>
+            </div>
+            <div class="sensor-footer">
+                <p>Última actualización: 15/05/2025 14:30</p>
+            </div>
+        </div>
+
+        <!-- Barranquilla -->
+        <div class="sensor-card">
+            <div class="sensor-header">
+                <h3>Sensor Barranquilla - Norte</h3>
+                <span class="sensor-status status-active">Activo</span>
+            </div>
+            <div class="sensor-data">
+                <div class="data-item">
+                    <div class="data-value">32°C</div>
+                    <div class="data-label">Temperatura</div>
+                </div>
+                <div class="data-item">
+                    <div class="data-value">78%</div>
+                    <div class="data-label">Humedad</div>
+                </div>
+                <div class="data-item">
+                    <div class="data-value">1011 hPa</div>
+                    <div class="data-label">Presión</div>
+                </div>
+                <div class="data-item">
+                    <div class="data-value">18 km/h</div>
+                    <div class="data-label">Viento</div>
+                </div>
+                <div class="data-item">
+                    <div class="data-value">0.0 mm</div>
+                    <div class="data-label">Precipitación</div>
+                </div>
+                <div class="data-item">
+                    <div class="data-value">120 W/m²</div>
+                    <div class="data-label">Radiación Solar</div>
+                </div>
+                <div class="data-item">
+                    <div class="data-value">N</div>
+                    <div class="data-label">Dirección Viento</div>
+                </div>
+                <div class="data-item">
+                    <div class="data-value">32 µg/m³</div>
+                    <div class="data-label">PM2.5</div>
+                </div>
+            </div>
+            <div class="sensor-footer">
+                <p>Última actualización: 15/05/2025 14:30</p>
+            </div>
+        </div>
+
+        <!-- Cartagena -->
+        <div class="sensor-card">
+            <div class="sensor-header">
+                <h3>Sensor Cartagena - Bocagrande</h3>
+                <span class="sensor-status status-active">Activo</span>
+            </div>
+            <div class="sensor-data">
+                <div class="data-item">
+                    <div class="data-value">31°C</div>
+                    <div class="data-label">Temperatura</div>
+                </div>
+                <div class="data-item">
+                    <div class="data-value">82%</div>
+                    <div class="data-label">Humedad</div>
+                </div>
+                <div class="data-item">
+                    <div class="data-value">1012 hPa</div>
+                    <div class="data-label">Presión</div>
+                </div>
+                <div class="data-item">
+                    <div class="data-value">15 km/h</div>
+                    <div class="data-label">Viento</div>
+                </div>
+                <div class="data-item">
+                    <div class="data-value">0.0 mm</div>
+                    <div class="data-label">Precipitación</div>
+                </div>
+                <div class="data-item">
+                    <div class="data-value">125 W/m²</div>
+                    <div class="data-label">Radiación Solar</div>
+                </div>
+                <div class="data-item">
+                    <div class="data-value">NE</div>
+                    <div class="data-label">Dirección Viento</div>
+                </div>
+                <div class="data-item">
+                    <div class="data-value">35 µg/m³</div>
+                    <div class="data-label">PM2.5</div>
+                </div>
+            </div>
+            <div class="sensor-footer">
+                <p>Última actualización: 15/05/2025 14:30</p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 - Servicio de Predicción Meteorológica. Todos los derechos reservados.</p>
+    </footer>
+</body>
+
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" href="weather-icon.png">
+    <title>Vista Satelital - Predicción Meteorológica</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f4f8;
+            color: #333;
+        }
+
+        header {
+            background-color: #1e3a8a;
+            color: #fff;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            padding: 0.5rem 0;
+        }
+
+        nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        nav ul li a:hover {
+            text-decoration: underline;
+        }
+
+        main {
+            padding: 2rem;
+            background: #e0f2fe;
+            text-align: center;
+            min-height: 80vh;
+        }
+
+        .weather-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            height: calc(110vh - 250px); /* Ajusta automáticamente al tamaño de la ventana */
+        }
+
+        iframe {
+            width: 100%;
+            height: calc(100% - 50px); /* Resta el espacio del título */
+            border: none;
+        }
+
+        footer {
+            background-color: #1e293b;
+            color: #cbd5e1;
+            text-align: center;
+            padding: 1rem;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>🌤️ Predicción Meteorológica Inteligente</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="satelital.html">Satelital</a></li>
+                <li><a href="sensores.html">Sensores</a></li>
+                <li><a href="historico.html">Histórico</a></li>
+                <li><a href="prediccion.html">Predicciones</a></li>
+                <li><a href="datos.html">Datos</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="weather-container">
+            <h2>Vista Satelital de Colombia</h2>
+            <iframe 
+                src="https://www.accuweather.com/es/co/bogota/107487/lightning/107487" 
+                frameborder="0" 
+                scrolling="no">
+            </iframe>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 - Servicio de Predicción Meteorológica. Todos los derechos reservados.</p>
+    </footer>
+</body>
+</html>

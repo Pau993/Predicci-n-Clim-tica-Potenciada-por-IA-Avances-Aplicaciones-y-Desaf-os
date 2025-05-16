@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" href="weather-icon.png">
+    <title>Análisis de Datos Climáticos</title>
+    <!-- Incluir Chart.js para las gráficas -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f4f8;
+            color: #333;
+        }
+
+        header {
+            background-color: #1e3a8a;
+            color: #fff;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            padding: 0.5rem 0;
+        }
+
+        nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        main {
+            padding: 2rem;
+            background: #e0f2fe;
+        }
+
+        .data-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            gap: 2rem;
+        }
+
+        .chart-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .data-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .summary-card {
+            background: #1e3a8a;
+            color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .summary-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        footer {
+            background-color: #1e293b;
+            color: #cbd5e1;
+            text-align: center;
+            padding: 1rem;
+            margin-top: 2rem;
+        }
+
+        .chart-description {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border-top: 2px solid #e2e8f0;
+            color: #1e293b;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            background: linear-gradient(to right, #f8fafc, #ffffff);
+            border-radius: 0 0 8px 8px;
+        }
+
+        .chart-description p {
+            text-align: justify;
+            padding: 0 1.5rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            position: relative;
+        }
+
+        .chart-description p::before {
+            content: '"';
+            position: absolute;
+            left: 0;
+            font-size: 2.5rem;
+            color: #3b82f6;
+            opacity: 0.3;
+            top: -0.5rem;
+        }
+
+        .chart-card h3 {
+            font-size: 1.5rem;
+            color: #1e3a8a;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e0f2fe;
+        }
+
+        .chart-card {
+            transition: transform 0.2s ease;
+        }
+
+        .chart-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .city-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            overflow-x: auto;
+            padding: 0.5rem;
+        }
+
+        .city-tab {
+            padding: 0.75rem 1.5rem;
+            background: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            color: #64748b;
+            transition: all 0.3s ease;
+        }
+
+        .city-tab.active {
+            background: #1e3a8a;
+            color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .city-data {
+            display: none;
+        }
+
+        .city-data.active {
+            display: block;
+        }
+
+        .city-title {
+            font-size: 2.5rem;
+            color: #1e3a8a;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .city-description {
+            font-size: 1.2rem;
+            color: #475569;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>🌤️ Análisis de Datos Climáticos</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="satelital.html">Satelital</a></li>
+                <li><a href="sensores.html">Sensores</a></li>
+                <li><a href="historico.html">Histórico</a></li>
+                <li><a href="prediccion.html">Predicciones</a></li>
+                <li><a href="datos.html">Datos Bogotá</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="city-tabs">
+            <button class="city-tab active" onclick="showCity('bogota')">Bogotá</button>
+            <button class="city-tab" onclick="showCity('medellin')">Medellín</button>
+            <button class="city-tab" onclick="showCity('cali')">Cali</button>
+            <button class="city-tab" onclick="showCity('barranquilla')">Barranquilla</button>
+            <button class="city-tab" onclick="showCity('cartagena')">Cartagena</button>
+        </div>
+
+        <div id="bogota" class="city-data active">
+            <h2 class="city-title">Datos Climáticos de Bogotá</h2>
+            <p class="city-description">Los datos climáticos de Bogotá son cruciales para entender el comportamiento del
+                clima en la región.
+                A continuación, se presentan los datos más relevantes.</p>
+            <div class="data-container">
+                <!-- Resumen de datos clave -->
+                <div class="data-summary">
+                    <div class="summary-card">
+                        <div class="summary-value">29.8°C</div>
+                        <div>Temperatura Máxima Registrada</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-value">-4.6°C</div>
+                        <div>Temperatura Mínima Registrada</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-value">14.5°C</div>
+                        <div>Temperatura Promedio</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-value">2413.2mm</div>
+                        <div>Lluvia Máxima Acumulada</div>
+                    </div>
+                </div>
+
+                <!-- Gráfica de temperatura -->
+                <div class="chart-card">
+                    <h3>Tendencia de Temperatura (2007-2024)</h3>
+                    <canvas id="tempChart"></canvas>
+                    <div class="chart-description">
+                        <p>La temperatura máxima en Bogotá muestra una tendencia al aumento en los últimos años,
+                            con un incremento notable desde 2007. El pico más alto se registró en 2024 con 29.8°C,
+                            mientras que en 2013 se observó el valor más bajo del período con 25.1°C. Esta tendencia
+                            podría indicar efectos del cambio climático en la región.</p>
+                    </div>
+                </div>
+
+                <!-- Gráfica de precipitación -->
+                <div class="chart-card">
+                    <h3>Precipitación Anual</h3>
+                    <canvas id="rainChart"></canvas>
+                    <div class="chart-description">
+                        <p>Los niveles de precipitación han mostrado variaciones significativas. El año 2020
+                            registró la mayor cantidad de lluvia con 2,413.2mm, seguido por una disminución gradual.
+                            Esta variabilidad en las precipitaciones puede afectar diversos aspectos como la
+                            disponibilidad de agua y la agricultura en la región.</p>
+                    </div>
+                </div>
+
+                <!-- Gráfica de fenómeno ENOS -->
+                <div class="chart-card">
+                    <h3>Distribución de Fenómenos ENOS</h3>
+                    <canvas id="enosChart"></canvas>
+                    <div class="chart-description">
+                        <p>La distribución de los fenómenos ENOS (El Niño-Oscilación del Sur) muestra un
+                            equilibrio entre sus fases. El fenómeno de La Niña y las condiciones neutras representan
+                            cada uno el 35% del tiempo, mientras que El Niño ocurre en el 30% restante. Esta
+                            distribución influye directamente en los patrones de lluvia y temperatura de la ciudad.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Datos Medellín -->
+        <div id="medellin" class="city-data">
+            <h2 class="city-title">Datos Climáticos de Medellín</h2>
+            <p class="city-description">Medellín, conocida como la ciudad de la eterna primavera, presenta patrones
+                climáticos
+                únicos debido a su ubicación en el Valle de Aburrá.</p>
+            <div class="data-container">
+                <div class="data-summary">
+                    <div class="summary-card">
+                        <div class="summary-value">32.5°C</div>
+                        <div>Temperatura Máxima Registrada</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-value">12.8°C</div>
+                        <div>Temperatura Mínima Registrada</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-value">22.4°C</div>
+                        <div>Temperatura Promedio</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-value">1845.6mm</div>
+                        <div>Lluvia Máxima Acumulada</div>
+                    </div>
+                </div>
+                <!-- Similar chart structure for Medellín -->
+            </div>
+        </div>
+        <!-- Datos Cali -->
+        <div id="cali" class="city-data">
+            <h2 class="city-title">Datos Climáticos de Cali</h2>
+            <p class="city-description">El clima de Cali está influenciado por su proximidad al Océano Pacífico y su
+                ubicación
+                en el Valle del Cauca, presentando características tropicales distintivas.</p>
+            <div class="data-container">
+                <div class="data-summary">
+                    <div class="summary-card">
+                        <div class="summary-value">35.0°C</div>
+                        <div>Temperatura Máxima Registrada</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-value">15.0°C</div>
+                        <div>Temperatura Mínima Registrada</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-value">25.0°C</div>
+                        <div>Temperatura Promedio</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-value">1456.7mm</div>
+                        <div>Lluvia Máxima Acumulada</div>
+                    </div>
+                </div>
+                <!-- Similar chart structure for Cali -->
+            </div>
+        </div>
+        <!-- Datos Barranquilla -->
+        <div id="barranquilla" class="city-data">
+            <h2 class="city-title">Datos Climáticos de Barranquilla</h2>
+            <p class="city-description">Como ciudad costera, Barranquilla experimenta un clima tropical húmedo con
+                influencia
+                directa del Mar Caribe y los vientos alisios.</p>
+            <div class="data-container">
+                <div class="data-summary">
+                    <div class="summary-card">
+                        <div class="summary-value">34.0°C</div>
+                        <div>Temperatura Máxima Registrada</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-value">20.0°C</div>
+                        <div>Temperatura Mínima Registrada</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-value">28.0°C</div>
+                        <div>Temperatura Promedio</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-value">1234.5mm</div>
+                        <div>Lluvia Máxima Acumulada</div>
+                    </div>
+                </div>
+                <!-- Similar chart structure for Barranquilla -->
+            </div>
+        </div>
+        <!-- Datos Cartagena -->
+        <div id="cartagena" class="city-data">
+            <h2 class="city-title">Datos Climáticos de Cartagena</h2>
+            <p class="city-description">Cartagena presenta un clima típicamente tropical caribeño, con altas
+                temperaturas y
+                humedad constante debido a su ubicación costera.</p>
+            <div class="data-container">
+                <div class="data-summary">
+                    <div class="summary-card">
+                        <div class="summary-value">36.0°C</div>
+                        <div>Temperatura Máxima Registrada</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-value">22.0°C</div>
+                        <div>Temperatura Mínima Registrada</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-value">30.0°C</div>
+                        <div>Temperatura Promedio</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-value">1376.7mm</div>
+                        <div>Lluvia Máxima Acumulada</div>
+                    </div>
+                </div>
+                <!-- Similar chart structure for Cartagena -->
+            </div>
+        </div>
+        </div>
+        <div class="chart-card">
+            <h3>Gráfica de Datos Históricos</h3>
+            <canvas id="historicalChart"></canvas>
+            <div class="chart-description">
+                <p>Esta gráfica muestra la evolución de los datos climáticos a lo largo de los años, permitiendo
+                    identificar tendencias y patrones en el comportamiento del clima.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 - Servicio de Predicción Meteorológica. Todos los derechos reservados.</p>
+    </footer>
+
+    <script>
+        // Configuración de gráficas
+        function showCity(cityId) {
+            // Ocultar todos los contenidos de ciudades
+            document.querySelectorAll('.city-data').forEach(el => {
+                el.classList.remove('active');
+            });
+            // Desactivar todos los tabs
+            document.querySelectorAll('.city-tab').forEach(el => {
+                el.classList.remove('active');
+            });
+
+            // Mostrar la ciudad seleccionada
+            document.getElementById(cityId).classList.add('active');
+            // Activar el tab seleccionado
+            document.querySelector(`[onclick="showCity('${cityId}')"]`).classList.add('active');
+
+            // Actualizar gráficas según la ciudad
+            updateCharts(cityId);
+        }
+
+        function updateCharts(cityId) {
+            const cityData = {
+                bogota: {
+                    temp: [26.4, 27.3, 25.1, 28.2, 29.7, 28.7, 29.8],
+                    rain: [2413.2, 1692.0, 2167.5, 1573.4, 1376.7],
+                    enos: [30, 35, 35]
+                },
+                medellin: {
+                    temp: [28.5, 29.2, 27.8, 30.1, 31.2, 31.8, 32.5],
+                    rain: [1845.6, 1523.8, 1678.2, 1456.7, 1234.5],
+                    enos: [32, 33, 35]
+                },
+                cali: {
+                    temp: [30.2, 31.5, 32.1, 33.4, 34.2, 34.8, 35.0],
+                    rain: [1456.7, 1234.5, 1567.8, 1345.6, 1289.4],
+                    enos: [35, 30, 35]
+                },
+                barranquilla: {
+                    temp: [31.5, 32.1, 32.8, 33.2, 33.6, 33.8, 34.0],
+                    rain: [1234.5, 956.7, 1123.4, 987.6, 876.5],
+                    enos: [38, 32, 30]
+                },
+                cartagena: {
+                    temp: [32.4, 33.1, 33.8, 34.5, 35.1, 35.6, 36.0],
+                    rain: [1376.7, 1123.4, 1245.6, 1087.8, 965.4],
+                    enos: [40, 30, 30]
+                }
+            };
+
+            updateTemperatureChart(cityData[cityId].temp);
+            updateRainfallChart(cityData[cityId].rain);
+            updateENOSChart(cityData[cityId].enos);
+        }
+
+        function updateTemperatureChart(data) {
+            // Update temperature chart with new data
+            tempChart.data.datasets[0].data = data;
+            tempChart.update();
+        }
+        const tempCtx = document.getElementById('tempChart').getContext('2d');
+        const rainCtx = document.getElementById('rainChart').getContext('2d');
+        const enosCtx = document.getElementById('enosChart').getContext('2d');
+
+        // Gráfica de temperatura
+        new Chart(tempCtx, {
+            type: 'line',
+            data: {
+                labels: ['2007', '2010', '2013', '2016', '2019', '2022', '2024'],
+                datasets: [{
+                    label: 'Temperatura Máxima',
+                    data: [26.4, 27.3, 25.1, 28.2, 29.7, 28.7, 29.8],
+                    borderColor: '#e11d48',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Evolución de la Temperatura Máxima'
+                    }
+                }
+            }
+        });
+
+        // Gráfica de precipitación
+        new Chart(rainCtx, {
+            type: 'bar',
+            data: {
+                labels: ['2020', '2021', '2022', '2023', '2024'],
+                datasets: [{
+                    label: 'Precipitación Anual (mm)',
+                    data: [2413.2, 1692.0, 2167.5, 1573.4, 1376.7],
+                    backgroundColor: '#3b82f6'
+                }]
+            }
+        });
+
+        // Gráfica de ENOS
+        new Chart(enosCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Niño', 'Niña', 'Neutro'],
+                datasets: [{
+                    data: [30, 35, 35],
+                    backgroundColor: ['#ef4444', '#3b82f6', '#84cc16']
+                }]
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" href="weather-icon.png">
+    <title>Histórico Meteorológico - Colombia</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f4f8;
+            color: #333;
+        }
+
+        header {
+            background-color: #1e3a8a;
+            color: #fff;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            padding: 0.5rem 0;
+        }
+
+        nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        nav ul li a:hover {
+            text-decoration: underline;
+        }
+
+        main {
+            padding: 2rem;
+            background: #e0f2fe;
+            min-height: 80vh;
+        }
+
+        .historic-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        select, input {
+            padding: 0.5rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .historic-data {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background-color: #f8fafc;
+            color: #1e3a8a;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .chart-container {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 8px;
+            height: 400px;
+        }
+
+        footer {
+            background-color: #1e293b;
+            color: #cbd5e1;
+            text-align: center;
+            padding: 1rem;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>🌤️ Predicción Meteorológica Inteligente</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="satelital.html">Satelital</a></li>
+                <li><a href="sensores.html">Sensores</a></li>
+                <li><a href="historico.html">Histórico</a></li>
+                <li><a href="prediccion.html">Predicciones</a></li>
+                <li><a href="datos.html">Datos</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="historic-container">
+            <h2>Histórico del Clima en Colombia</h2>
+            
+            <div class="filters">
+                <div class="filter-group">
+                    <label for="city">Ciudad:</label>
+                    <select id="city">
+                        <option value="all">Todas las ciudades</option>
+                        <option value="bogota">Bogotá</option>
+                        <option value="medellin">Medellín</option>
+                        <option value="cali">Cali</option>
+                        <option value="barranquilla">Barranquilla</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="year">Año:</label>
+                    <select id="year">
+                        <option value="2025">2025</option>
+                        <option value="2024">2024</option>
+                        <option value="2023">2023</option>
+                        <option value="2022">2022</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="parameter">Parámetro:</label>
+                    <select id="parameter">
+                        <option value="temperature">Temperatura</option>
+                        <option value="rainfall">Precipitación</option>
+                        <option value="humidity">Humedad</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="historic-data">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Ciudad</th>
+                            <th>Temperatura</th>
+                            <th>Precipitación</th>
+                            <th>Humedad</th>
+                            <th>Presión</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>15/05/2025</td>
+                            <td>Bogotá</td>
+                            <td>18°C</td>
+                            <td>2.5 mm</td>
+                            <td>65%</td>
+                            <td>1015 hPa</td>
+                        </tr>
+                        <tr>
+                            <td>15/05/2025</td>
+                            <td>Medellín</td>
+                            <td>22°C</td>
+                            <td>0 mm</td>
+                            <td>70%</td>
+                            <td>1012 hPa</td>
+                        </tr>
+                        <tr>
+                            <td>15/05/2025</td>
+                            <td>Cali</td>
+                            <td>25°C</td>
+                            <td>1.2 mm</td>
+                            <td>75%</td>
+                            <td>1010 hPa</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="chart-container">
+                <!-- Aquí se podría agregar una gráfica usando Chart.js o similar -->
+                <p>Gráfica de tendencias históricas</p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 - Servicio de Predicción Meteorológica. Todos los derechos reservados.</p>
+    </footer>
+</body>
+</html>

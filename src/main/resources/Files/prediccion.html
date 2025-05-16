@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="icon" type="image/png" href="weather-icon.png">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <title>Predicción Meteorológica Inteligente</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f0f4f8;
+      color: #333;
+    }
+
+    header {
+      background-color: #1e3a8a;
+      color: #fff;
+      padding: 1.5rem;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      padding: 0.5rem 0;
+    }
+
+    nav ul li a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    nav ul li a:hover {
+      text-decoration: underline;
+    }
+
+    main {
+      padding: 2rem;
+      background: #e0f2fe;
+      text-align: center;
+    }
+
+    .cities-container {
+      max-width: 1000px;
+      margin: 2rem auto;
+    }
+
+    .cities-list {
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1.5rem;
+      padding: 1rem;
+    }
+
+    .city-link {
+      display: block;
+      padding: 1.5rem;
+      text-decoration: none;
+      background-color: #fff;
+      border-radius: 8px;
+      color: #1e3a8a;
+      font-weight: 500;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s ease;
+    }
+
+    .city-link:hover {
+      transform: translateY(-5px);
+      background-color: #f8fafc;
+    }
+
+    main h2 {
+      font-size: 1.75rem;
+      margin-bottom: 1rem;
+      color: #0f172a;
+    }
+
+    footer {
+      background-color: #1e293b;
+      color: #cbd5e1;
+      text-align: center;
+      padding: 1rem;
+      margin-top: 2rem;
+    }
+
+    .city-details {
+      display: none;
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      margin-top: 2rem;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .city-details.active {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    .weather-graphs,
+    .weather-prediction {
+      background: #f8fafc;
+      padding: 1.5rem;
+      border-radius: 8px;
+      text-align: left;
+    }
+
+    .weather-graphs h3,
+    .weather-prediction h3 {
+      color: #1e3a8a;
+      margin-bottom: 1rem;
+    }
+
+    .graph-container {
+      width: 100%;
+      height: 300px;
+      background: white;
+      border-radius: 4px;
+      margin-bottom: 1rem;
+      padding: 1rem;
+    }
+
+    .prediction-list {
+      list-style: none;
+    }
+
+    .prediction-list li {
+      padding: 0.75rem;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .prediction-list li:last-child {
+      border-bottom: none;
+    }
+
+    .monthly-forecast {
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      margin-top: 2rem;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .forecast-header {
+      color: #1e3a8a;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      font-size: 1.5rem;
+    }
+
+    .forecast-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .chart-wrapper {
+      background: #f8fafc;
+      padding: 1.5rem;
+      border-radius: 8px;
+      height: 400px;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>🌤️ Predicción Meteorológica Inteligente</h1>
+    <nav>
+      <ul>
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="satelital.html">Satelital</a></li>
+        <li><a href="sensores.html">Sensores</a></li>
+        <li><a href="historico.html">Histórico</a></li>
+        <li><a href="prediccion.html">Predicciones</a></li>
+        <li><a href="datos.html">Datos</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <h2>Predicción por Ciudades</h2>
+    <div class="cities-container">
+      <ul class="cities-list">
+        <li><a href="#bogota" class="city-link" onclick="showCityDetails('bogota')">Bogotá</a></li>
+        <li><a href="#medellin" class="city-link" onclick="showCityDetails('medellin')">Medellín</a></li>
+        <li><a href="#cali" class="city-link" onclick="showCityDetails('cali')">Cali</a></li>
+        <li><a href="#barranquilla" class="city-link" onclick="showCityDetails('barranquilla')">Barranquilla</a></li>
+        <li><a href="#cartagena" class="city-link" onclick="showCityDetails('cartagena')">Cartagena</a></li>
+        <li><a href="#santamarta" class="city-link" onclick="showCityDetails('santamarta')">Santa Marta</a></li>
+        <li><a href="#bucaramanga" class="city-link" onclick="showCityDetails('bucaramanga')">Bucaramanga</a></li>
+        <li><a href="#pereira" class="city-link" onclick="showCityDetails('pereira')">Pereira</a></li>
+        <li><a href="#manizales" class="city-link" onclick="showCityDetails('manizales')">Manizales</a></li>
+        <li><a href="#cucuta" class="city-link" onclick="showCityDetails('cucuta')">Cúcuta</a></li>
+      </ul>
+      <!-- Detalles para cada ciudad -->
+      <div id="bogota-details" class="city-details">
+        <div class="weather-graphs">
+          <h3>Gráficas de Tendencias</h3>
+          <div class="graph-container">
+            <p>Temperatura (últimas 24 horas)</p>
+            <!-- Aquí irá la gráfica de temperatura -->
+          </div>
+          <div class="graph-container">
+            <p>Precipitación (últimas 24 horas)</p>
+            <!-- Aquí irá la gráfica de precipitación -->
+          </div>
+        </div>
+        <div class="weather-prediction">
+          <h3>Predicción Meteorológica</h3>
+          <ul class="prediction-list">
+            <li>Temperatura actual: 18°C</li>
+            <li>Humedad: 65%</li>
+            <li>Probabilidad de lluvia: 30%</li>
+            <li>Velocidad del viento: 12 km/h</li>
+            <li>Presión atmosférica: 1015 hPa</li>
+            <li>Visibilidad: 10 km</li>
+          </ul>
+        </div>
+      </div>
+      <div id="medellin-details" class="city-details">
+        <div class="weather-graphs">
+          <h3>Gráficas de Tendencias - Medellín</h3>
+          <div class="graph-container">
+            <p>Temperatura (últimas 24 horas)</p>
+          </div>
+          <div class="graph-container">
+            <p>Precipitación (últimas 24 horas)</p>
+          </div>
+        </div>
+        <div class="weather-prediction">
+          <h3>Predicción Meteorológica</h3>
+          <ul class="prediction-list">
+            <li>Temperatura actual: 22°C</li>
+            <li>Humedad: 70%</li>
+            <li>Probabilidad de lluvia: 40%</li>
+            <li>Velocidad del viento: 8 km/h</li>
+            <li>Presión atmosférica: 1012 hPa</li>
+            <li>Visibilidad: 12 km</li>
+          </ul>
+        </div>
+      </div>
+
+      <div id="cali-details" class="city-details">
+        <div class="weather-graphs">
+          <h3>Gráficas de Tendencias - Cali</h3>
+          <div class="graph-container">
+            <p>Temperatura (últimas 24 horas)</p>
+          </div>
+          <div class="graph-container">
+            <p>Precipitación (últimas 24 horas)</p>
+          </div>
+        </div>
+        <div class="weather-prediction">
+          <h3>Predicción Meteorológica</h3>
+          <ul class="prediction-list">
+            <li>Temperatura actual: 25°C</li>
+            <li>Humedad: 75%</li>
+            <li>Probabilidad de lluvia: 20%</li>
+            <li>Velocidad del viento: 10 km/h</li>
+            <li>Presión atmosférica: 1010 hPa</li>
+            <li>Visibilidad: 15 km</li>
+          </ul>
+        </div>
+      </div>
+
+      <div id="barranquilla-details" class="city-details">
+        <div class="weather-graphs">
+          <h3>Gráficas de Tendencias - Barranquilla</h3>
+          <div class="graph-container">
+            <p>Temperatura (últimas 24 horas)</p>
+          </div>
+          <div class="graph-container">
+            <p>Precipitación (últimas 24 horas)</p>
+          </div>
+        </div>
+        <div class="weather-prediction">
+          <h3>Predicción Meteorológica</h3>
+          <ul class="prediction-list">
+            <li>Temperatura actual: 32°C</li>
+            <li>Humedad: 80%</li>
+            <li>Probabilidad de lluvia: 10%</li>
+            <li>Velocidad del viento: 15 km/h</li>
+            <li>Presión atmosférica: 1008 hPa</li>
+            <li>Visibilidad: 18 km</li>
+          </ul>
+        </div>
+      </div>
+      <div id="cartagena-details" class="city-details">
+        <div class="weather-graphs">
+          <h3>Gráficas de Tendencias - Cartagena</h3>
+          <div class="graph-container">
+            <p>Temperatura (últimas 24 horas)</p>
+          </div>
+          <div class="graph-container">
+            <p>Precipitación (últimas 24 horas)</p>
+          </div>
+        </div>
+        <div class="weather-prediction">
+          <h3>Predicción Meteorológica</h3>
+          <ul class="prediction-list">
+            <li>Temperatura actual: 30°C</li>
+            <li>Humedad: 85%</li>
+            <li>Probabilidad de lluvia: 15%</li>
+            <li>Velocidad del viento: 12 km/h</li>
+            <li>Presión atmosférica: 1005 hPa</li>
+            <li>Visibilidad: 20 km</li>
+          </ul>
+        </div>
+      </div>
+      <div id="santamarta-details" class="city-details">
+        <div class="weather-graphs">
+          <h3>Gráficas de Tendencias - Santa Marta</h3>
+          <div class="graph-container">
+            <p>Temperatura (últimas 24 horas)</p>
+          </div>
+          <div class="graph-container">
+            <p>Precipitación (últimas 24 horas)</p>
+          </div>
+        </div>
+        <div class="weather-prediction">
+          <h3>Predicción Meteorológica</h3>
+          <ul class="prediction-list">
+            <li>Temperatura actual: 28°C</li>
+            <li>Humedad: 90%</li>
+            <li>Probabilidad de lluvia: 25%</li>
+            <li>Velocidad del viento: 10 km/h</li>
+            <li>Presión atmosférica: 1007 hPa</li>
+            <li>Visibilidad: 22 km</li>
+          </ul>
+        </div>
+      </div>
+      <div id="bucaramanga-details" class="city-details">
+        <div class="weather-graphs">
+          <h3>Gráficas de Tendencias - Bucaramanga</h3>
+          <div class="graph-container">
+            <p>Temperatura (últimas 24 horas)</p>
+          </div>
+          <div class="graph-container">
+            <p>Precipitación (últimas 24 horas)</p>
+          </div>
+        </div>
+        <div class="weather-prediction">
+          <h3>Predicción Meteorológica</h3>
+          <ul class="prediction-list">
+            <li>Temperatura actual: 24°C</li>
+            <li>Humedad: 78%</li>
+            <li>Probabilidad de lluvia: 30%</li>
+            <li>Velocidad del viento: 9 km/h</li>
+            <li>Presión atmosférica: 1011 hPa</li>
+            <li>Visibilidad: 16 km</li>
+          </ul>
+        </div>
+      </div>
+      <div id="pereira-details" class="city-details">
+        <div class="weather-graphs">
+          <h3>Gráficas de Tendencias - Pereira</h3>
+          <div class="graph-container">
+            <p>Temperatura (últimas 24 horas)</p>
+          </div>
+          <div class="graph-container">
+            <p>Precipitación (últimas 24 horas)</p>
+          </div>
+        </div>
+        <div class="weather-prediction">
+          <h3>Predicción Meteorológica</h3>
+          <ul class="prediction-list">
+            <li>Temperatura actual: 23°C</li>
+            <li>Humedad: 77%</li>
+            <li>Probabilidad de lluvia: 35%</li>
+            <li>Velocidad del viento: 11 km/h</li>
+            <li>Presión atmosférica: 1013 hPa</li>
+            <li>Visibilidad: 14 km</li>
+          </ul>
+        </div>
+      </div>
+      <div id="manizales-details" class="city-details">
+        <div class="weather-graphs">
+          <h3>Gráficas de Tendencias - Manizales</h3>
+          <div class="graph-container">
+            <p>Temperatura (últimas 24 horas)</p>
+          </div>
+          <div class="graph-container">
+            <p>Precipitación (últimas 24 horas)</p>
+          </div>
+        </div>
+        <div class="weather-prediction">
+          <h3>Predicción Meteorológica</h3>
+          <ul class="prediction-list">
+            <li>Temperatura actual: 21°C</li>
+            <li>Humedad: 80%</li>
+            <li>Probabilidad de lluvia: 45%</li>
+            <li>Velocidad del viento: 7 km/h</li>
+            <li>Presión atmosférica: 1014 hPa</li>
+            <li>Visibilidad: 13 km</li>
+          </ul>
+        </div>
+      </div>
+      <div id="cucuta-details" class="city-details">
+        <div class="weather-graphs">
+          <h3>Gráficas de Tendencias - Cúcuta</h3>
+          <div class="graph-container">
+            <p>Temperatura (últimas 24 horas)</p>
+          </div>
+          <div class="graph-container">
+            <p>Precipitación (últimas 24 horas)</p>
+          </div>
+        </div>
+        <div class="weather-prediction">
+          <h3>Predicción Meteorológica</h3>
+          <ul class="prediction-list">
+            <li>Temperatura actual: 29°C</li>
+            <li>Humedad: 65%</li>
+            <li>Probabilidad de lluvia: 5%</li>
+            <li>Velocidad del viento: 12 km/h</li>
+            <li>Presión atmosférica: 1009 hPa</li>
+            <li>Visibilidad: 17 km</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="monthly-forecast">
+      <h2 class="forecast-header">Predicción Climatológica - Junio 2025</h2>
+      <div class="forecast-grid">
+        <div class="chart-wrapper">
+          <canvas id="monthlyForecast"></canvas>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const cities = [
+      'bogota', 'medellin', 'cali', 'barranquilla',
+      'cartagena', 'santamarta', 'bucaramanga',
+      'pereira', 'manizales', 'cucuta'
+    ];
+    function showCityDetails(city) {
+      // Ocultar todos los detalles
+      document.querySelectorAll('.city-details').forEach(el => {
+        el.classList.remove('active');
+      });
+
+      // Mostrar los detalles de la ciudad seleccionada
+      document.getElementById(city + '-details').classList.add('active');
+    }
+
+    function createTemperatureChart(cityId) {
+      const ctx = document.querySelector(`#${cityId}-details .graph-container:first-child canvas`);
+      return new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ['6:00', '9:00', '12:00', '15:00', '18:00', '21:00', '00:00'],
+          datasets: [{
+            label: 'Temperatura (°C)',
+            data: getCityTemperatureData(cityId),
+            borderColor: '#ef4444',
+            tension: 0.4,
+            fill: true,
+            backgroundColor: 'rgba(239, 68, 68, 0.1)'
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: 'Temperatura últimas 24 horas'
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: false,
+              title: {
+                display: true,
+                text: 'Temperatura (°C)'
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function createRainfallChart(cityId) {
+      const ctx = document.querySelector(`#${cityId}-details .graph-container:last-child canvas`);
+      return new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['6:00', '9:00', '12:00', '15:00', '18:00', '21:00', '00:00'],
+          datasets: [{
+            label: 'Precipitación (mm)',
+            data: getCityRainfallData(cityId),
+            backgroundColor: '#3b82f6',
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: 'Precipitación últimas 24 horas'
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: 'Precipitación (mm)'
+              }
+            }
+          }
+        }
+      });
+    }
+    // Datos de precipitación por ciudad
+    function getCityRainfallData(cityId) {
+      const rainData = {
+        'bogota': [0.2, 0.5, 1.2, 0.8, 0.3, 0.1, 0],
+        'medellin': [0, 0.8, 1.5, 2.0, 1.2, 0.5, 0.2],
+        'cali': [0, 0.3, 0.8, 1.2, 0.6, 0.2, 0],
+        'barranquilla': [0, 0.1, 0.3, 0.2, 0, 0, 0],
+        'cartagena': [0, 0.2, 0.5, 0.3, 0.1, 0, 0],
+        'santamarta': [0, 0.3, 0.7, 0.5, 0.2, 0, 0],
+        'bucaramanga': [0.1, 0.6, 1.0, 0.8, 0.4, 0.2, 0],
+        'pereira': [0.3, 0.8, 1.4, 1.1, 0.7, 0.4, 0.1],
+        'manizales': [0.4, 1.0, 1.6, 1.3, 0.8, 0.5, 0.2],
+        'cucuta': [0, 0.2, 0.4, 0.3, 0.1, 0, 0]
+      };
+      return rainData[cityId] || Array(7).fill(0);
+    }
+
+    // Función para inicializar todas las gráficas
+    function initializeCityCharts() {
+      cities.forEach(city => {
+        const containers = document.querySelectorAll(`#${city}-details .graph-container`);
+        containers.forEach(container => {
+          if (!container.querySelector('canvas')) {
+            const canvas = document.createElement('canvas');
+            container.appendChild(canvas);
+          }
+        });
+        createTemperatureChart(city);
+        createRainfallChart(city);
+      });
+    }
+
+    const oldShowCityDetails = showCityDetails;
+    showCityDetails = function (city) {
+      oldShowCityDetails(city);
+
+      // Agregar canvas para las gráficas si no existen
+      const containers = document.querySelectorAll(`#${city}-details .graph-container`);
+      containers.forEach(container => {
+        if (!container.querySelector('canvas')) {
+          const canvas = document.createElement('canvas');
+          container.appendChild(canvas);
+        }
+      });
+
+      // Crear las gráficas
+      createTemperatureChart(city);
+      createRainfallChart(city);
+    };
+    showCityDetails('bogota');
+
+    function getCityTemperatureData(cityId) {
+      const tempData = {
+        'bogota': [14, 16, 19, 21, 20, 17, 15],      // Frío, temp max 21°C
+        'medellin': [17, 20, 23, 25, 24, 21, 19],    // Templado, temp max 25°C
+        'cali': [19, 23, 28, 30, 29, 25, 22],        // Cálido, temp max 30°C
+        'barranquilla': [25, 28, 32, 33, 31, 28, 26],// Tropical, temp max 33°C
+        'cartagena': [26, 28, 31, 32, 31, 29, 27],   // Tropical costero, max 32°C
+        'santamarta': [25, 27, 30, 31, 30, 28, 26],  // Tropical costero, max 31°C
+        'bucaramanga': [20, 22, 25, 27, 26, 23, 21], // Templado, temp max 27°C
+        'pereira': [18, 20, 23, 25, 24, 21, 19],     // Templado andino, max 25°C
+        'manizales': [16, 18, 21, 22, 21, 19, 17],   // Frío andino, max 22°C
+        'cucuta': [23, 26, 31, 33, 32, 28, 25]       // Cálido seco, max 33°C
+      };
+      return tempData[cityId] || Array(7).fill(0);
+    }
+
+    // Datos de predicción mensual
+    const ctx = document.getElementById('monthlyForecast').getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Semana 1', 'Semana 2', 'Semana 3', 'Semana 4'],
+        datasets: [
+          {
+            label: 'Temperatura Máxima (°C)',
+            data: [28, 29, 30, 31],
+            borderColor: '#ef4444',
+            tension: 0.1
+          },
+          {
+            label: 'Temperatura Mínima (°C)',
+            data: [16, 17, 18, 19],
+            borderColor: '#3b82f6',
+            tension: 0.1
+          },
+          {
+            label: 'Precipitación (mm)',
+            data: [45, 38, 30, 25],
+            borderColor: '#84cc16',
+            tension: 0.1
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Tendencias Climatológicas Junio 2025',
+            font: {
+              size: 16
+            }
+          },
+          tooltip: {
+            mode: 'index',
+            intersect: false
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: false
+          }
+        }
+      }
+    });
+
+    // Añadir resumen de predicción
+    document.querySelector('.forecast-grid').innerHTML += `
+        <div class="weather-prediction">
+            <h3>Resumen de Predicción - Junio 2025</h3>
+            <ul class="prediction-list">
+                <li>Se espera un aumento gradual de temperatura</li>
+                <li>Disminución progresiva de precipitaciones</li>
+                <li>Temperatura máxima esperada: 31°C</li>
+                <li>Temperatura mínima esperada: 16°C</li>
+                <li>Precipitación total esperada: 138mm</li>
+                <li>Probabilidad de fenómeno La Niña: 35%</li>
+            </ul>
+        </div>
+    `;
+  </script>
+
+  <footer>
+    <p>&copy; 2025 - Servicio de Predicción Meteorológica. Todos los derechos reservados.</p>
+  </footer>
+  <script>
+    function showCityDetails(cityId) {
+      const allDetails = document.querySelectorAll('.city-details');
+      allDetails.forEach(detail => {
+        detail.classList.remove('active');
+      });
+
+      const selectedDetail = document.getElementById(`${cityId}-details`);
+      if (selectedDetail) {
+        selectedDetail.classList.add('active');
+        selectedDetail.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  </script>
+
+
+</body>
+
+</html>
