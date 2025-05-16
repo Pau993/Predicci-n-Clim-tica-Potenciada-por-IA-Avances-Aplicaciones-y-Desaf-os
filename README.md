@@ -58,7 +58,7 @@ git clone https://github.com/tu_usuario/prediccion-meteorologica-inteligente.git
 cd prediccion-meteorologica-inteligente
 
 ```
-🧭 Diagrama de Arquitectura
+# 🧭 Diagrama de Arquitectura
 Este diagrama muestra cómo interactúan los componentes del sistema:
 
 ![WhatsApp Image 2025-05-14 at 12 17 23 AM](https://github.com/user-attachments/assets/c0ef474c-1494-4a59-bef3-c390be23749f)
