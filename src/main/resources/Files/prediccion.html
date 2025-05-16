@@ -219,10 +219,12 @@
           <h3>Gráficas de Tendencias</h3>
           <div class="graph-container">
             <p>Temperatura (últimas 24 horas)</p>
+            <canvas></canvas>
             <!-- Aquí irá la gráfica de temperatura -->
           </div>
           <div class="graph-container">
             <p>Precipitación (últimas 24 horas)</p>
+            <canvas></canvas>
             <!-- Aquí irá la gráfica de precipitación -->
           </div>
         </div>
@@ -441,10 +443,26 @@
     </div>
     <div class="monthly-forecast">
       <h2 class="forecast-header">Predicción Climatológica - Junio 2025</h2>
-      <div class="forecast-grid">
-        <div class="chart-wrapper">
+
+      <label for="citySelect">Selecciona la ciudad:</label>
+      <select id="citySelect">
+        <option value="bogota">Bogotá</option>
+        <option value="medellin">Medellín</option>
+        <option value="cali">Cali</option>
+        <option value="barranquilla">Barranquilla</option>
+        <option value="cartagena">Cartagena</option>
+        <option value="santamarta">Santa Marta</option>
+        <option value="bucaramanga">Bucaramanga</option>
+        <option value="pereira">Pereira</option>
+        <option value="manizales">Manizales</option>
+        <option value="cucuta">Cúcuta</option>
+      </select>
+
+      <div class="forecast-grid" style="max-width:600px; margin:auto;">
+        <div class="chart-wrapper" style="position: relative; height: 300px;">
           <canvas id="monthlyForecast"></canvas>
         </div>
+        <div id="forecastSummary" style="margin-top: 20px;"></div>
       </div>
     </div>
   </main>
@@ -462,11 +480,43 @@
       });
 
       // Mostrar los detalles de la ciudad seleccionada
-      document.getElementById(city + '-details').classList.add('active');
+      const detailsEl = document.getElementById(city + '-details');
+      detailsEl.classList.add('active');
+
+      // Crear gráficos si no existen ya
+      if (!detailsEl.dataset.chartRendered) {
+        createTemperatureChart(city);
+        createRainfallChart(city);
+        detailsEl.dataset.chartRendered = 'true';
+      }
     }
 
     function createTemperatureChart(cityId) {
-      const ctx = document.querySelector(`#${cityId}-details .graph-container:first-child canvas`);
+      const cityDetails = document.getElementById(`${cityId}-details`);
+      if (!cityDetails) {
+        console.warn(`No se encontró el contenedor para ${cityId}-details`);
+        return;
+      }
+
+      const containers = cityDetails.querySelectorAll(".graph-container");
+      if (containers.length === 0) {
+        console.warn(`No se encontró ningún contenedor de gráficas para ${cityId}`);
+        return;
+      }
+      const container = containers[0];
+
+      let canvas = container.querySelector("canvas");
+      if (!canvas) {
+        canvas = document.createElement("canvas");
+        container.appendChild(canvas);
+      }
+
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        console.warn(`No se pudo obtener el contexto del canvas de temperatura para ${cityId}`);
+        return;
+      }
+
       return new Chart(ctx, {
         type: 'line',
         data: {
@@ -502,7 +552,30 @@
     }
 
     function createRainfallChart(cityId) {
-      const ctx = document.querySelector(`#${cityId}-details .graph-container:last-child canvas`);
+      const cityDetails = document.getElementById(`${cityId}-details`);
+      if (!cityDetails) {
+        console.warn(`No se encontró el contenedor para ${cityId}-details`);
+        return;
+      }
+
+      const container = cityDetails.querySelector(".graph-container:last-child");
+      if (!container) {
+        console.warn(`No se encontró el contenedor de lluvia para ${cityId}`);
+        return;
+      }
+
+      let canvas = container.querySelector("canvas");
+      if (!canvas) {
+        canvas = document.createElement("canvas");
+        container.appendChild(canvas);
+      }
+
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        console.warn(`No se pudo obtener el contexto del canvas de lluvia para ${cityId}`);
+        return;
+      }
+
       return new Chart(ctx, {
         type: 'bar',
         data: {
@@ -533,6 +606,7 @@
         }
       });
     }
+
     // Datos de precipitación por ciudad
     function getCityRainfallData(cityId) {
       const rainData = {
@@ -565,23 +639,7 @@
       });
     }
 
-    const oldShowCityDetails = showCityDetails;
-    showCityDetails = function (city) {
-      oldShowCityDetails(city);
 
-      // Agregar canvas para las gráficas si no existen
-      const containers = document.querySelectorAll(`#${city}-details .graph-container`);
-      containers.forEach(container => {
-        if (!container.querySelector('canvas')) {
-          const canvas = document.createElement('canvas');
-          container.appendChild(canvas);
-        }
-      });
-
-      // Crear las gráficas
-      createTemperatureChart(city);
-      createRainfallChart(city);
-    };
     showCityDetails('bogota');
 
     function getCityTemperatureData(cityId) {
@@ -601,69 +659,162 @@
     }
 
     // Datos de predicción mensual
+    const monthlyData = {
+      bogota: {
+        maxTemps: [20, 21, 22, 23],
+        minTemps: [10, 11, 12, 13],
+        rain: [50, 45, 40, 30],
+        summary: [
+          "Aumento gradual de temperatura",
+          "Precipitaciones moderadas",
+          "Temperatura máxima esperada: 23°C",
+          "Temperatura mínima esperada: 10°C",
+          "Precipitación total esperada: 165mm",
+          "Fenómeno La Niña: baja probabilidad"
+        ]
+      },
+      medellin: {
+        maxTemps: [25, 26, 27, 28],
+        minTemps: [15, 16, 17, 18],
+        rain: [40, 38, 35, 28],
+        summary: [
+          "Temperaturas estables",
+          "Disminución leve de lluvia",
+          "Temperatura máxima esperada: 28°C",
+          "Temperatura mínima esperada: 15°C",
+          "Precipitación total esperada: 141mm",
+          "Fenómeno La Niña: moderada probabilidad"
+        ]
+      },
+      // Añade datos similares para las demás ciudades...
+    };
+
+    // Por simplicidad, si una ciudad no tiene datos, mostramos un default vacío
+    const defaultData = {
+      maxTemps: [28, 29, 30, 31],
+      minTemps: [16, 17, 18, 19],
+      rain: [45, 38, 30, 25],
+      summary: [
+        "Se espera un aumento gradual de temperatura",
+        "Disminución progresiva de precipitaciones",
+        "Temperatura máxima esperada: 31°C",
+        "Temperatura mínima esperada: 16°C",
+        "Precipitación total esperada: 138mm",
+        "Probabilidad de fenómeno La Niña: 35%"
+      ]
+    };
+
     const ctx = document.getElementById('monthlyForecast').getContext('2d');
-    new Chart(ctx, {
-      type: 'line',
-      data: {
+    let chart;
+
+    function updateChart(city) {
+      const data = monthlyData[city] || defaultData;
+
+      const chartData = {
         labels: ['Semana 1', 'Semana 2', 'Semana 3', 'Semana 4'],
         datasets: [
           {
             label: 'Temperatura Máxima (°C)',
-            data: [28, 29, 30, 31],
+            data: data.maxTemps,
             borderColor: '#ef4444',
-            tension: 0.1
+            tension: 0.1,
+            fill: false,
+            yAxisID: 'y'
           },
           {
             label: 'Temperatura Mínima (°C)',
-            data: [16, 17, 18, 19],
+            data: data.minTemps,
             borderColor: '#3b82f6',
-            tension: 0.1
+            tension: 0.1,
+            fill: false,
+            yAxisID: 'y'
           },
           {
             label: 'Precipitación (mm)',
-            data: [45, 38, 30, 25],
+            data: data.rain,
             borderColor: '#84cc16',
-            tension: 0.1
+            tension: 0.1,
+            fill: false,
+            yAxisID: 'y1'
           }
         ]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          title: {
-            display: true,
-            text: 'Tendencias Climatológicas Junio 2025',
-            font: {
-              size: 16
+      };
+
+      if (chart) {
+        chart.data = chartData;
+        chart.update();
+      } else {
+        chart = new Chart(ctx, {
+          type: 'line',
+          data: chartData,
+          options: {
+            responsive: true,
+            interaction: {
+              mode: 'index',
+              intersect: false,
+            },
+            plugins: {
+              title: {
+                display: true,
+                text: `Tendencias Climatológicas Junio 2025 - ${city.charAt(0).toUpperCase() + city.slice(1)}`,
+                font: {
+                  size: 18,
+                }
+              },
+              tooltip: {
+                enabled: true,
+              },
+              legend: {
+                position: 'top',
+              }
+            },
+            scales: {
+              y: {
+                type: 'linear',
+                position: 'left',
+                beginAtZero: false,
+                title: {
+                  display: true,
+                  text: 'Temperatura (°C)'
+                }
+              },
+              y1: {
+                type: 'linear',
+                position: 'right',
+                beginAtZero: true,
+                title: {
+                  display: true,
+                  text: 'Precipitación (mm)'
+                },
+                grid: {
+                  drawOnChartArea: false,
+                }
+              }
             }
-          },
-          tooltip: {
-            mode: 'index',
-            intersect: false
           }
-        },
-        scales: {
-          y: {
-            beginAtZero: false
-          }
-        }
+        });
       }
+
+      // Actualizar resumen
+      const summaryDiv = document.getElementById('forecastSummary');
+      summaryDiv.innerHTML = `<h3>Resumen de Predicción - ${city.charAt(0).toUpperCase() + city.slice(1)}</h3>`;
+      const ul = document.createElement('ul');
+      ul.classList.add('prediction-list');
+      data.summary.forEach(line => {
+        const li = document.createElement('li');
+        li.textContent = line;
+        ul.appendChild(li);
+      });
+      summaryDiv.appendChild(ul);
+    }
+
+    // Evento para cambiar ciudad
+    document.getElementById('citySelect').addEventListener('change', (e) => {
+      updateChart(e.target.value);
     });
 
-    // Añadir resumen de predicción
-    document.querySelector('.forecast-grid').innerHTML += `
-        <div class="weather-prediction">
-            <h3>Resumen de Predicción - Junio 2025</h3>
-            <ul class="prediction-list">
-                <li>Se espera un aumento gradual de temperatura</li>
-                <li>Disminución progresiva de precipitaciones</li>
-                <li>Temperatura máxima esperada: 31°C</li>
-                <li>Temperatura mínima esperada: 16°C</li>
-                <li>Precipitación total esperada: 138mm</li>
-                <li>Probabilidad de fenómeno La Niña: 35%</li>
-            </ul>
-        </div>
-    `;
+    // Inicializar con la ciudad por defecto
+    updateChart('bogota');
   </script>
 
   <footer>
@@ -672,14 +823,18 @@
   <script>
     function showCityDetails(cityId) {
       const allDetails = document.querySelectorAll('.city-details');
-      allDetails.forEach(detail => {
-        detail.classList.remove('active');
-      });
+      allDetails.forEach(detail => detail.classList.remove('active'));
 
       const selectedDetail = document.getElementById(`${cityId}-details`);
       if (selectedDetail) {
         selectedDetail.classList.add('active');
         selectedDetail.scrollIntoView({ behavior: 'smooth' });
+
+        if (!selectedDetail.dataset.chartRendered) {
+          createTemperatureChart(cityId);
+          createRainfallChart(cityId);
+          selectedDetail.dataset.chartRendered = 'true';
+        }
       }
     }
   </script>
