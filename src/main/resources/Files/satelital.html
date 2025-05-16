@@ -49,26 +49,33 @@
             text-decoration: underline;
         }
 
-        main {
-            padding: 2rem;
-            background: #e0f2fe;
-            text-align: center;
-            min-height: 80vh;
-        }
-
         .weather-container {
-            max-width: 1200px;
+            max-width: 1500px;
             margin: 0 auto;
             background: white;
             padding: 1rem;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            height: calc(110vh - 250px); /* Ajusta automáticamente al tamaño de la ventana */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            height: calc(150vh - 250px);
+        }
+
+        .weather-container iframe {
+            width: 100%;
+            height: calc(100% - 30px);
+            border: none;
+        }
+
+        main {
+            padding: 2rem;
+            background: #e0f2fe;
+            text-align: center;
+            min-height: 90vh;
         }
 
         iframe {
             width: 100%;
-            height: calc(100% - 50px); /* Resta el espacio del título */
+            height: calc(100% - 50px);
+            /* Resta el espacio del título */
             border: none;
         }
 
